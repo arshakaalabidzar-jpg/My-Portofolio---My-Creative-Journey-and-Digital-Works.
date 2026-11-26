@@ -345,9 +345,23 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 // Navigasi aktif mengikuti section yang sedang ditampilkan
-function updateActiveNavigation() {
-  let currentSection = sections[0];
 
+
+ // Navigasi aktif mengikuti section yang sedang ditampilkan
+function updateActiveNavigation() {
+
+  // Saat halaman pertama kali dibuka, Home harus aktif
+  if (window.scrollY < 50) {
+    navLinks.forEach(link => {
+      link.classList.toggle(
+        'active',
+        link.getAttribute('href') === '#home'
+      );
+    });
+    return;
+  }
+
+  let currentSection = sections[0];
   const activationPoint = header.getBoundingClientRect().height + 100;
 
   sections.forEach(section => {
@@ -373,6 +387,7 @@ window.addEventListener('scroll', updateActiveNavigation, { passive: true });
 window.addEventListener('resize', updateActiveNavigation);
 
 updateActiveNavigation();
+
 
 // Door details: update content without leaving the page.
 const serviceData = {
