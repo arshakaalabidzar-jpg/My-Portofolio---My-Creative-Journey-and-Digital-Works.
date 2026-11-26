@@ -326,30 +326,53 @@ mainNav.querySelectorAll('a').forEach(link => {
 const header = document.querySelector('.site-header');
 const sections = [...document.querySelectorAll('main section[id]')];
 
+// Animasi elemen ketika mulai terlihat
 const revealObserver = new IntersectionObserver(entries => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('visible');
-
-      const match = navLinks.find(link =>
-        link.getAttribute('href') === `#${entry.target.id}`
-      );
-
-      if (match) {
-        navLinks.forEach(link => link.classList.remove('active'));
-        match.classList.add('active');
-      }
     }
   });
-}, {threshold: 0.16});
+}, { threshold: 0.16 });
 
 document.querySelectorAll('.reveal').forEach(el => {
   revealObserver.observe(el);
 });
 
+// Header berubah saat halaman di-scroll
 window.addEventListener('scroll', () => {
   header.classList.toggle('scrolled', window.scrollY > 25);
-}, {passive:true});
+}, { passive: true });
+
+// Navigasi aktif mengikuti section yang sedang ditampilkan
+function updateActiveNavigation() {
+  let currentSection = sections[0];
+
+  const activationPoint = header.getBoundingClientRect().height + 100;
+
+  sections.forEach(section => {
+    if (section.getBoundingClientRect().top <= activationPoint) {
+      currentSection = section;
+    }
+  });
+
+  // Contact aktif ketika pengguna mencapai bagian paling bawah
+  if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+    currentSection = sections[sections.length - 1];
+  }
+
+  navLinks.forEach(link => {
+    link.classList.toggle(
+      'active',
+      link.getAttribute('href') === `#${currentSection.id}`
+    );
+  });
+}
+
+window.addEventListener('scroll', updateActiveNavigation, { passive: true });
+window.addEventListener('resize', updateActiveNavigation);
+
+updateActiveNavigation();
 
 // Door details: update content without leaving the page.
 const serviceData = {
